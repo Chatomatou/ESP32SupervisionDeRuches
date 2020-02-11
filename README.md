@@ -1,2 +1,5 @@
-# ESP32SupervisionDeRuches
-Projet de 2e année de BTS SNIR, qui consiste a la supervision d'une ruche connecté.
+# Blink Example
+
+Starts a FreeRTOS task to blink an LED
+
+See the README.md file in the upper level 'examples' directory for more information about examples.

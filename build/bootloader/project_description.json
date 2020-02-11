@@ -1,0 +1,20 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/home/adolphefilsdedieu/esp/esp-idf/components/bootloader/subproject",
+    "build_dir":          "/home/adolphefilsdedieu/eclipse-workspace/blink/build/bootloader",
+    "config_file":        "/home/adolphefilsdedieu/eclipse-workspace/blink/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v4.1-dev-2055-gf5b82c5b1",
+    "target":             "esp32",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/home/adolphefilsdedieu/esp/esp-idf/components/efuse/Kconfig;/home/adolphefilsdedieu/esp/esp-idf/components/esp32/Kconfig;/home/adolphefilsdedieu/esp/esp-idf/components/esp_common/Kconfig;/home/adolphefilsdedieu/esp/esp-idf/components/log/Kconfig;/home/adolphefilsdedieu/esp/esp-idf/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/home/adolphefilsdedieu/esp/esp-idf/components/bootloader/Kconfig.projbuild;/home/adolphefilsdedieu/esp/esp-idf/components/esptool_py/Kconfig.projbuild;/home/adolphefilsdedieu/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_rom", "esptool_py", "log", "main", "micro-ecc", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "/home/adolphefilsdedieu/esp/esp-idf/components/bootloader", "/home/adolphefilsdedieu/esp/esp-idf/components/bootloader_support", "/home/adolphefilsdedieu/esp/esp-idf/components/efuse", "/home/adolphefilsdedieu/esp/esp-idf/components/esp32", "/home/adolphefilsdedieu/esp/esp-idf/components/esp_common", "/home/adolphefilsdedieu/esp/esp-idf/components/esp_rom", "/home/adolphefilsdedieu/esp/esp-idf/components/esptool_py", "/home/adolphefilsdedieu/esp/esp-idf/components/log", "/home/adolphefilsdedieu/esp/esp-idf/components/bootloader/subproject/main", "/home/adolphefilsdedieu/esp/esp-idf/components/bootloader/subproject/components/micro-ecc", "/home/adolphefilsdedieu/esp/esp-idf/components/partition_table", "/home/adolphefilsdedieu/esp/esp-idf/components/soc", "/home/adolphefilsdedieu/esp/esp-idf/components/spi_flash", "/home/adolphefilsdedieu/esp/esp-idf/components/xtensa", "" ]
+}
