@@ -1,9 +1,6 @@
-#
-# This is a project Makefile. It is assumed the directory this Makefile resides in is a
-# project subdirectory.
-#
+#V := 1
+PROJECT_NAME := SupervisionDeRuches
 
-PROJECT_NAME := blink
+EXTRA_COMPONENT_DIRS := $(CURDIR)/../../components
 
 include $(IDF_PATH)/make/project.mk
-

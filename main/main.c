@@ -4,7 +4,7 @@
 
 void app_main()
 {
-	Hive hive = HIVE_Create();
-	HIVE_RunTask(&hive);
+    Hive hive = HIVE_Create();
+    HIVE_RunTask(&hive);
 }
 

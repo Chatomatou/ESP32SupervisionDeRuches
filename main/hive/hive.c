@@ -24,84 +24,49 @@ Hive HIVE_Create()
 }
 void HIVE_RunTask(Hive* hive)
 {
-	//xTaskCreate(hive->measures_dht22, "test2", STACK_SIZE, hive, 5, NULL);
- 	//xTaskCreate(hive->measures_dht11, "test1", STACK_SIZE, hive, 5, NULL);
-	DHT dht22 = DHT_InitializeSensor(DHT_22, DHT_22_PIN);
-	DHT dht11 = DHT_InitializeSensor(DHT_11, DHT_11_PIN);
-
-	while(true)
-	{
- 
-		if(DHT_Read(&dht22))
-		{
-			hive->external_temperature = dht22.temperature;
-			hive->external_humidity = dht22.humidity;
-		}
-
-        vTaskDelay(2000 / portTICK_RATE_MS);
-
-		if(DHT_Read(&dht11))
-		{
-			hive->internal_temperature = dht11.temperature;
-			hive->internal_humidity = dht11.humidity;
-		}
- 
- 
-		printf("DHT22 [%d %d]\n", hive->external_temperature, hive->external_humidity);
-		printf("DHT11 [%d %d]\n", hive->internal_temperature, hive->internal_humidity);
-	}
+	xTaskCreate(hive->measures_dht11, "dht_11", configMINIMAL_STACK_SIZE * 3, hive, 5, NULL);
+    xTaskCreate(hive->measures_dht22, "dht_22", configMINIMAL_STACK_SIZE * 3, hive, 5, NULL);
 }
 
 
 void measures_dht11_task(void* pvParameter)
 {
-	DHT dht11 = DHT_InitializeSensor(DHT_11, DHT_11_PIN);
 	Hive* pHive = (Hive**)pvParameter;
 
-	if(pHive == NULL)
-	{
-		fprintf(stderr, "FAILURE::HIVE::IS_NULL\n");
-	}
+ 	while (true)
+    {
+		int16_t temperature = 0;
+		int16_t humidity = 0;
 
-	while(true)
-	{
-        vTaskDelay(2000 / portTICK_RATE_MS);
-
-		if(DHT_Read(&dht11))
-		{
-			pHive->internal_temperature = dht11.temperature;
-			pHive->internal_humidity = dht11.humidity;
-		}
- 
-
-		printf("DHT11 [%d %d]\n", pHive->internal_temperature, pHive->internal_humidity);
-	}
+        if (dht_read_data(DHT_TYPE_AM2301, DHT_22_PIN, &humidity, &temperature) == ESP_OK)
+       	{
+			pHive->external_temperature = temperature / 10;
+			pHive->external_humidity = humidity / 10;
+			printf("DHT22 > %d%% %d°C\n", pHive->external_humidity, pHive->external_temperature);
+	   	}
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }	 
 }
 void measures_dht22_task(void* pvParameter)
 {
-	DHT dht22 = DHT_InitializeSensor(DHT_22, DHT_22_PIN);
 	Hive* pHive = (Hive**)pvParameter;
 
-	if(pHive == NULL)
-	{
-		fprintf(stderr, "FAILURE::HIVE::IS_NULL\n");
-	}
+ 	while (true)
+    {
+		int16_t temperature = 0;
+		int16_t humidity = 0;
 
-	while(true)
-	{
-		vTaskDelay(2000 / portTICK_RATE_MS);
- 
-
-		if(DHT_Read(&dht22))
+        if (dht_read_data(DHT_TYPE_DHT11, DHT_11_PIN, &humidity, &temperature) == ESP_OK)
 		{
-			pHive->external_temperature = dht22.temperature;
-			pHive->external_humidity = dht22.humidity;
+			pHive->internal_temperature = temperature / 10;
+			pHive->internal_humidity = humidity / 10;
+			printf("DHT11 > %d%% %d°C\n", pHive->internal_humidity, pHive->internal_temperature);
 		}
-
- 
-		printf("DHT22 [%d %d]\n", pHive->external_temperature, pHive->external_humidity);
-	}
+			
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }	 
 }
+
 void measures_weight_one_task(void* pvParameter)
 {
 	fprintf(stderr, "ERRROR::NOT_IMPLEMENTED\n");

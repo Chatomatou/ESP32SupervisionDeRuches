@@ -6,13 +6,13 @@
 
 #include "freertos/task.h"
 #include "freertos/semphr.h"
-#define STACK_SIZE 2048
 
-#include "../dhtxx/dht.h"
+#include <dht.h>
 
 // Standard lib
 #include <stdbool.h>
 #include <string.h>
+#include <stdint.h>
 
 enum 
 {
@@ -34,16 +34,16 @@ enum
 
 typedef struct 
 {
-	int internal_temperature;
-	int internal_humidity;
+	int16_t internal_temperature;
+	int16_t internal_humidity;
 	
-	int external_temperature;
-	int external_humidity;
+	int16_t external_temperature;
+	int16_t external_humidity;
 	
-	int weight_one;
-	int weight_two;
-	int weight_three;
-	int weight_foor;
+	int16_t weight_one;
+	int16_t weight_two;
+	int16_t weight_three;
+	int16_t weight_foor;
 	
 	void	(*measures_dht11) 				(void* self);
 	void 	(*measures_dht22) 				(void* self);

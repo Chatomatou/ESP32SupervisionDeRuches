@@ -1470,27 +1470,6 @@
     {
         "children": [
             {
-                "children": [], 
-                "depends_on": null, 
-                "help": "GPIO number (IOxx) to blink on and off.\n\nSome GPIOs are used for other purposes (flash connections, etc.) and cannot be used to blink.\n\nGPIOs 35-39 are input-only so cannot be used as outputs.", 
-                "id": "BLINK_GPIO", 
-                "name": "BLINK_GPIO", 
-                "range": [
-                    0, 
-                    34
-                ], 
-                "title": "Blink GPIO number", 
-                "type": "int"
-            }
-        ], 
-        "depends_on": null, 
-        "id": "example-configuration", 
-        "title": "Example Configuration", 
-        "type": "menu"
-    }, 
-    {
-        "children": [
-            {
                 "children": [
                     {
                         "children": [], 
@@ -13951,6 +13930,182 @@
                 "depends_on": null, 
                 "id": "component-config-supplicant", 
                 "title": "Supplicant", 
+                "type": "menu"
+            }, 
+            {
+                "children": [
+                    {
+                        "children": [], 
+                        "depends_on": null, 
+                        "help": null, 
+                        "id": "RE_MAX", 
+                        "name": "RE_MAX", 
+                        "range": null, 
+                        "title": "Maximum number of rotary encoders", 
+                        "type": "int"
+                    }, 
+                    {
+                        "children": [], 
+                        "depends_on": null, 
+                        "help": null, 
+                        "id": "RE_INTERVAL_US", 
+                        "name": "RE_INTERVAL_US", 
+                        "range": null, 
+                        "title": "Polling interval, us", 
+                        "type": "int"
+                    }, 
+                    {
+                        "children": [], 
+                        "depends_on": null, 
+                        "help": null, 
+                        "id": "RE_BTN_DEAD_TIME_US", 
+                        "name": "RE_BTN_DEAD_TIME_US", 
+                        "range": null, 
+                        "title": "Button dead time, us", 
+                        "type": "int"
+                    }, 
+                    {
+                        "children": [
+                            {
+                                "children": [], 
+                                "depends_on": "<choice RE_BTN_PRESSED_LEVEL>", 
+                                "help": null, 
+                                "id": "RE_BTN_PRESSED_LEVEL_0", 
+                                "name": "RE_BTN_PRESSED_LEVEL_0", 
+                                "range": null, 
+                                "title": "0", 
+                                "type": "bool"
+                            }, 
+                            {
+                                "children": [], 
+                                "depends_on": "<choice RE_BTN_PRESSED_LEVEL>", 
+                                "help": null, 
+                                "id": "RE_BTN_PRESSED_LEVEL_1", 
+                                "name": "RE_BTN_PRESSED_LEVEL_1", 
+                                "range": null, 
+                                "title": "1", 
+                                "type": "bool"
+                            }
+                        ], 
+                        "depends_on": null, 
+                        "help": null, 
+                        "id": "component-config-rotary-encoders-logical-level-on-pressed-button", 
+                        "name": "RE_BTN_PRESSED_LEVEL", 
+                        "title": "Logical level on pressed button", 
+                        "type": "choice"
+                    }, 
+                    {
+                        "children": [], 
+                        "depends_on": null, 
+                        "help": null, 
+                        "id": "RE_BTN_LONG_PRESS_TIME_US", 
+                        "name": "RE_BTN_LONG_PRESS_TIME_US", 
+                        "range": null, 
+                        "title": "Long press timeout, us", 
+                        "type": "int"
+                    }
+                ], 
+                "depends_on": null, 
+                "id": "component-config-rotary-encoders", 
+                "title": "Rotary encoders", 
+                "type": "menu"
+            }, 
+            {
+                "children": [
+                    {
+                        "children": [], 
+                        "depends_on": null, 
+                        "help": null, 
+                        "id": "HMC5883L_MEAS_TIMEOUT", 
+                        "name": "HMC5883L_MEAS_TIMEOUT", 
+                        "range": [
+                            500, 
+                            10000
+                        ], 
+                        "title": "Measurement timeout, microseconds", 
+                        "type": "int"
+                    }
+                ], 
+                "depends_on": null, 
+                "id": "component-config-hmc5883l", 
+                "title": "HMC5883L", 
+                "type": "menu"
+            }, 
+            {
+                "children": [
+                    {
+                        "children": [], 
+                        "depends_on": null, 
+                        "help": null, 
+                        "id": "I2CDEV_TIMEOUT", 
+                        "name": "I2CDEV_TIMEOUT", 
+                        "range": [
+                            100, 
+                            5000
+                        ], 
+                        "title": "I2C transaction timeout, milliseconds", 
+                        "type": "int"
+                    }
+                ], 
+                "depends_on": null, 
+                "id": "component-config-i2c", 
+                "title": "I2C", 
+                "type": "menu"
+            }, 
+            {
+                "children": [
+                    {
+                        "children": [
+                            {
+                                "children": [], 
+                                "depends_on": "<choice MCP23X17_IFACE>", 
+                                "help": null, 
+                                "id": "MCP23X17_IFACE_I2C", 
+                                "name": "MCP23X17_IFACE_I2C", 
+                                "range": null, 
+                                "title": "MCP23017 [I2C]", 
+                                "type": "bool"
+                            }, 
+                            {
+                                "children": [], 
+                                "depends_on": "<choice MCP23X17_IFACE>", 
+                                "help": null, 
+                                "id": "MCP23X17_IFACE_SPI", 
+                                "name": "MCP23X17_IFACE_SPI", 
+                                "range": null, 
+                                "title": "MCP23S17 [SPI]", 
+                                "type": "bool"
+                            }
+                        ], 
+                        "depends_on": null, 
+                        "help": null, 
+                        "id": "component-config-mcp23x17-chip-type", 
+                        "name": "MCP23X17_IFACE", 
+                        "title": "Chip type", 
+                        "type": "choice"
+                    }
+                ], 
+                "depends_on": null, 
+                "id": "component-config-mcp23x17", 
+                "title": "MCP23x17", 
+                "type": "menu"
+            }, 
+            {
+                "children": [
+                    {
+                        "children": [], 
+                        "depends_on": null, 
+                        "help": "Compute a Dallas Semiconductor 8 bit CRC using a CRC table located in flash", 
+                        "id": "ONEWIRE_CRC8_TABLE", 
+                        "name": "ONEWIRE_CRC8_TABLE", 
+                        "range": null, 
+                        "title": "Fast CRC-8 algorithm", 
+                        "type": "bool"
+                    }
+                ], 
+                "depends_on": null, 
+                "id": "component-config-onewire", 
+                "title": "OneWire", 
                 "type": "menu"
             }
         ], 
