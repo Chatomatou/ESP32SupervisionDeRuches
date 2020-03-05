@@ -7,8 +7,7 @@
 
 #include "dht.h"
 
-static int64_t last_read_time = -2000000;
-
+ 
 static int _dht_wait_or_timeout(const DHT* dht, uint16_t microSeconds, int level)
 {
     int micros_ticks = 0;
@@ -66,6 +65,9 @@ DHT DHT_InitializeSensor(const DHT_TYPE type, const gpio_num_t pin)
 }
 bool DHT_Read(DHT* dht)
 {
+	int64_t last_read_time = -2000000;
+
+
 	if(dht == NULL)
 		return false;
 
@@ -129,8 +131,8 @@ bool DHT_Read(DHT* dht)
 			  }
 			  dht->temperature = ft;
 		}
-
+		 
 		return true;
-	}
+	}	 
 	return false;
 }

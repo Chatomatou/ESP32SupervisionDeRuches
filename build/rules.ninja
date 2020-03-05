@@ -1298,7 +1298,7 @@ rule CXX_STATIC_LIBRARY_LINKER____idf_main
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /usr/bin/cmake -S/home/adolphefilsdedieu/eclipse-workspace/blink -B/home/adolphefilsdedieu/eclipse-workspace/blink/build
+  command = /usr/bin/cmake -S/home/adolphefilsdedieu/Documents/SupervisionDeRuchesESP32 -B/home/adolphefilsdedieu/Documents/SupervisionDeRuchesESP32/build
   description = Re-running CMake...
   generator = 1
 
