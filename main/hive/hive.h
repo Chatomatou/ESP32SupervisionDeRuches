@@ -8,6 +8,7 @@
 #include "freertos/semphr.h"
 
 #include <dht.h>
+#include <hx711.h>
 
 // Standard lib
 #include <stdbool.h>
@@ -40,17 +41,12 @@ typedef struct
 	int16_t external_temperature;
 	int16_t external_humidity;
 	
-	int16_t weight_one;
-	int16_t weight_two;
-	int16_t weight_three;
-	int16_t weight_foor;
+	float weight;
 	
 	void	(*measures_dht11) 				(void* self);
 	void 	(*measures_dht22) 				(void* self);
-	void 	(*measures_weight_one) 			(void* self);
-	void 	(*measures_weight_two) 			(void* self);
-	void 	(*measures_weight_three) 		(void* self);
-	void 	(*measures_weight_foor) 		(void* self);
+	void 	(*measures_weight) 				(void* self);
+ 
 	void (*test1) (void* self);
 	void (*test2) (void* self);
 }Hive;
@@ -62,12 +58,15 @@ void HIVE_RunTask(Hive* hive);
 
 void measures_dht11_task(void* pvParameter);
 void measures_dht22_task(void* pvParameter);
+void measures_weight_task(void* pvParameter);
+
 void measures_weight_one_task(void* pvParameter);
 void measures_weight_two_task(void* pvParameter);
 void measures_weight_three_task(void* pvParameter);
 void measures_weight_foor_task(void* pvParameter);
 void test_task1(void* pvParameter);
 void test_task2(void* pvParameter);
+ 
 
 
 

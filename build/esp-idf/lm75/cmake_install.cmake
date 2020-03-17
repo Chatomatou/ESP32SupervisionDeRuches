@@ -1,4 +1,4 @@
-# Install script for directory: /home/adolphefilsdedieu/Documents/SupervisionDeRuchesESP32/components/lm75
+# Install script for directory: /home/adolphefilsdedieu/Documents/IoT/SupervisionDeRuchesESP32/components/lm75
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

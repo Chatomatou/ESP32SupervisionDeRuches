@@ -1,4 +1,4 @@
-# Install script for directory: /home/adolphefilsdedieu/Documents/SupervisionDeRuchesESP32/components/bh1750
+# Install script for directory: /home/adolphefilsdedieu/Documents/IoT/SupervisionDeRuchesESP32/components/bh1750
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
