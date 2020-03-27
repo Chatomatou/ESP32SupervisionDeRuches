@@ -2,7 +2,9 @@
 #define HIVE_H_
 
 #include "driver/gpio.h"
+#include "driver/adc.h"
 #include "esp_task_wdt.h"
+
 
 #include "freertos/task.h"
 #include "freertos/semphr.h"
@@ -14,6 +16,12 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
+#include <math.h>
+
+
+
+#define RADIUS 0.045 // Rayon de l'anémomètre 
+
 
 enum 
 {
@@ -34,21 +42,15 @@ enum
 };
 
 typedef struct 
-{
+{	 
 	int16_t internal_temperature;
 	int16_t internal_humidity;
 	
 	int16_t external_temperature;
 	int16_t external_humidity;
-	
+
 	float weight;
-	
-	void	(*measures_dht11) 				(void* self);
-	void 	(*measures_dht22) 				(void* self);
-	void 	(*measures_weight) 				(void* self);
- 
-	void (*test1) (void* self);
-	void (*test2) (void* self);
+	float wend_speed;
 }Hive;
 
 
@@ -56,18 +58,8 @@ Hive HIVE_Create();
 void HIVE_RunTask(Hive* hive);
 
 
-void measures_dht11_task(void* pvParameter);
-void measures_dht22_task(void* pvParameter);
-void measures_weight_task(void* pvParameter);
+void periodic_timer_display_callback(void* self);
 
-void measures_weight_one_task(void* pvParameter);
-void measures_weight_two_task(void* pvParameter);
-void measures_weight_three_task(void* pvParameter);
-void measures_weight_foor_task(void* pvParameter);
-void test_task1(void* pvParameter);
-void test_task2(void* pvParameter);
  
-
-
-
+ 
 #endif 

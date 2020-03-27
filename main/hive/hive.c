@@ -2,72 +2,42 @@
 
 Hive HIVE_Create()
 {
-	esp_task_wdt_deinit();
-	esp_task_wdt_reset();
-	
-	
 	Hive hive;
 
-	memset(&hive, 0, sizeof(hive));
-
-	hive.measures_dht11 = measures_dht11_task;
-	hive.measures_dht22 = measures_dht22_task;
-	hive.measures_weight = measures_weight_task;
+	hive.external_temperature = 0;
+	hive.external_humidity = 0;
+ 	hive.internal_temperature = 0;
+	hive.internal_humidity = 0;
+	hive.weight = 0.0f;
+	hive.wend_speed = 0.0f;
  
-	hive.test1 = test_task1;
-	hive.test2 = test_task2;
- 	
+ 
+
+	/* Configuration du convertisseur analogique numérique */
+	/*
+	
+	The ADC driver API supports ADC1 (8 channels, attached to GPIOs 32 - 39), 
+	and ADC2 (10 channels, attached to GPIOs 0, 2, 4, 12 - 15 and 25 - 27). 
+	However, the usage of ADC2 has some restrictions for the application:
+	Source : https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html#_CPPv416hall_sensor_readv
+
+	Je vais configurer l'ADC n°2 car mon énomomètre et au pin 2 
+	
+	ADC2 is used by the Wi-Fi driver. Therefore the application can only use ADC2 when the Wi-Fi driver has not started.
+	GPIO 0, 2, 4 and 15 cannot be used due to external connections for different purposes
+	*/
+
+
+	//adc2_config_width(ADC_WIDTH_BIT_12); // Le CAN travaillera sur 12 BIT
+    adc2_config_channel_atten(ADC2_CHANNEL_2, ADC_ATTEN_0db ); // Pas d'atténuation 
+
 	return hive;
 }
+
 void HIVE_RunTask(Hive* hive)
 {
-	xTaskCreate(hive->measures_dht11, "dht_11", configMINIMAL_STACK_SIZE * 3, hive, 5, NULL);
-    xTaskCreate(hive->measures_dht22, "dht_22", configMINIMAL_STACK_SIZE * 3, hive, 5, NULL);
-    xTaskCreate(hive->measures_weight, "weight", configMINIMAL_STACK_SIZE * 3, hive, 5, NULL);
-}
-
-
-void measures_dht11_task(void* pvParameter)
-{
-	Hive* pHive = (Hive**)pvParameter;
-
- 	while (true)
-    {
-		int16_t temperature = 0;
-		int16_t humidity = 0;
-
-        if (dht_read_data(DHT_TYPE_AM2301, DHT_22_PIN, &humidity, &temperature) == ESP_OK)
-       	{
-			pHive->external_temperature = temperature / 10;
-			pHive->external_humidity = humidity / 10;
-			printf("DHT22 > %d%% %d°C\n", pHive->external_humidity, pHive->external_temperature);
-	   	}
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-    }	 
-}
-void measures_dht22_task(void* pvParameter)
-{
-	Hive* pHive = (Hive**)pvParameter;
-
- 	while (true)
-    {
-		int16_t temperature = 0;
-		int16_t humidity = 0;
-
-        if (dht_read_data(DHT_TYPE_DHT11, DHT_11_PIN, &humidity, &temperature) == ESP_OK)
-		{
-			pHive->internal_temperature = temperature / 10;
-			pHive->internal_humidity = humidity / 10;
-			printf("DHT11 > %d%% %d°C\n", pHive->internal_humidity, pHive->internal_temperature);
-		}
-			
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-    }	 
-}
-
-void measures_weight_task(void* pvParameter)
-{
-	Hive* pHive = (Hive**)pvParameter;
+ 	int16_t temperature = 0;
+	int16_t humidity = 0;
 
 	hx711_t dev[4] = {
 		{.dout = WEIGHT_SENSOR_DATA_ONE_PIN, .pd_sck = WEIGHT_SENSOR_SCK_ONE_PIN, .gain = HX711_GAIN_A_64},
@@ -79,19 +49,41 @@ void measures_weight_task(void* pvParameter)
 	float measures[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	float calibratings[4] = {90.16, 92.16, 91.17, 114.2};
 
-	size_t length = sizeof(dev) / sizeof(dev[0]);
-
-	for(int i = 0; i < length; i++)
-	{
-		esp_err_t hx711_is_init = hx711_init(&dev[i]);
-
-		if(hx711_is_init != ESP_OK)
-			fprintf(stderr, "Device not found n°%d : %d (%s)\n", i, hx711_is_init, esp_err_to_name(hx711_is_init));
-		vTaskDelay(500 / portTICK_PERIOD_MS);
-	}
+	bool continue_impulsion_couting = true;
+	int64_t deltaTime = 0;
+	int64_t deltaCounter = 0;
+	uint32_t impulsionCounter = 0;
 
 	while(true)
 	{
+		if(dht_read_data(DHT_TYPE_AM2301, DHT_22_PIN, &humidity, &temperature) == ESP_OK)
+		{
+			hive->external_temperature = temperature / 10;
+			hive->external_humidity = humidity / 10;
+		}
+		
+		vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+		if(dht_read_data(DHT_TYPE_DHT11, DHT_11_PIN, &humidity, &temperature) == ESP_OK)
+		{
+			hive->internal_temperature = temperature / 10;
+			hive->internal_humidity = humidity / 10;
+		}
+				
+		vTaskDelay(2000 / portTICK_PERIOD_MS);
+		
+		size_t length = sizeof(dev) / sizeof(dev[0]);
+
+		for(int i = 0; i < length; i++)
+		{
+			esp_err_t hx711_is_init = hx711_init(&dev[i]);
+
+			if(hx711_is_init != ESP_OK)
+				fprintf(stderr, "Device not found n°%d : %d (%s)\n", i, hx711_is_init, esp_err_to_name(hx711_is_init));
+			vTaskDelay(500 / portTICK_PERIOD_MS);
+		}
+
+	 
 		for(int i = 0; i < length; i++)
 		{
 			esp_err_t wait = hx711_wait(&dev[i], 500);
@@ -116,30 +108,63 @@ void measures_weight_task(void* pvParameter)
 				vTaskDelay(2000 / portTICK_PERIOD_MS);
 			}
 		}
+		hive->weight = (measures[0] + measures[1]) / (length / 2) +  (measures[2] + measures[3]) / (length / 2); 
 
-		pHive->weight = (measures[0] + measures[1]) / (length / 2) +  (measures[2] + measures[3]) / (length / 2); 
-		printf("Weight: %.2fg\n", pHive->weight);
+		vTaskDelay(2000 / portTICK_PERIOD_MS);
+ 
+		while(continue_impulsion_couting)
+		{
+			int value = 0;
+			int64_t start = esp_timer_get_time();
+			esp_err_t code = adc2_get_raw(ADC2_CHANNEL_2, ADC_WIDTH_12Bit, &value);
+
+			if(code == ESP_OK && value == 4096-1)
+				impulsionCounter++;
+			else if(code == ESP_ERR_TIMEOUT)
+				printf("ADC2 used by Wi-Fi.\n");
+
+			 
+
+			if(deltaCounter > 5000000)
+			{
+				printf("%d\n", impulsionCounter);
+				hive->wend_speed = (2*M_PI*RADIUS*impulsionCounter)/5;
+				deltaCounter = 0.0f;
+				impulsionCounter = 0;
+ 				continue_impulsion_couting = false;
+			}
+
+			vTaskDelay(10 / portTICK_PERIOD_MS);
+
+			deltaTime = ( esp_timer_get_time() - start );
+			deltaCounter += deltaTime;
+
+	 
+		}
+		continue_impulsion_couting = true; 
+
+		printf("[DHT22] Temp ext : %d / %d %%\n", hive->external_temperature, hive->external_humidity);
+		printf("[DHT11] Temp int : %d / %d %%\n", hive->internal_temperature, hive->internal_humidity);
+		printf("[HX711] Poids : %.2f g\n", hive->weight);
+		printf("[ENEMO] Vitesse du vent : %.2f m/s\n", hive->wend_speed);
 	}
 }
 
- 
-void test_task1(void* pvParameter)
+void periodic_timer_display_callback(void* self)
 {
-	while(true)
+	Hive* pHive = (Hive**)self;
+
+	if(pHive == NULL)
 	{
-		printf("first_task executed\n");
+		fprintf(stderr, "[SupervisionDebug] pHive n'est pas allouer.\n");
+		return;
 	}
+
+	printf("[DHT22] Temp ext : %d / %d %%\n", pHive->external_temperature, pHive->external_humidity);
+	printf("[DHT11] Temp int : %d / %d %%\n", pHive->internal_temperature, pHive->internal_humidity);
+	printf("[HX711] Poids : %.2f g\n", pHive->weight);
+	printf("[ENEMO] Vitesse du vent : %.2f m/s\n", pHive->wend_speed);
 }
 
-void test_task2(void* pvParameter)
-{
-	//Hive* pHive = (Hive**)pvParameter;
-
  
-	while(true)
-	{
- 
-		printf("second_task executed\n");
-	}
-}
  
