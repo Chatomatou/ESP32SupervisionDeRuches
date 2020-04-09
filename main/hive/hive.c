@@ -147,6 +147,8 @@ void HIVE_RunTask(Hive* hive)
 		printf("[DHT11] Temp int : %d / %d %%\n", hive->internal_temperature, hive->internal_humidity);
 		printf("[HX711] Poids : %.2f g\n", hive->weight);
 		printf("[ENEMO] Vitesse du vent : %.2f m/s\n", hive->wend_speed);
+
+		Hive_PushToDatabse(&hive);
 	}
 }
 
@@ -164,6 +166,65 @@ void periodic_timer_display_callback(void* self)
 	printf("[DHT11] Temp int : %d / %d %%\n", pHive->internal_temperature, pHive->internal_humidity);
 	printf("[HX711] Poids : %.2f g\n", pHive->weight);
 	printf("[ENEMO] Vitesse du vent : %.2f m/s\n", pHive->wend_speed);
+}
+
+void Hive_PushToDatabse(Hive* hive)
+{
+	struct hostent* host = gethostbyname("192.168.0.21");
+
+    if(host == NULL)
+    {
+        printf("Host not found\n");
+    }
+    else 
+    {
+        printf("host found\n");
+    }
+
+    int sockid = socket(AF_INET, SOCK_STREAM, 0);
+
+    if(sockid < 0 )
+    {
+        perror("socket()");
+    }
+    else 
+    {
+        printf("socket created.\n");
+    }
+    struct sockaddr_in sockname;
+
+    sockname.sin_family = AF_INET;
+    sockname.sin_port = htons(8080);
+    sockname.sin_addr.s_addr = inet_addr("192.168.0.21");
+
+    if(connect(sockid, (struct sockaddr*)& sockname, sizeof(sockname)) != 0)
+    {
+        close(sockid);
+        perror("connect()");
+    }
+    else 
+    {
+        printf("socket connected.\n");
+    }
+	char szHtppRequest[256];
+	sprintf(szHtppRequest, "GET http://192.168.0.21:8080/Ruches/index.php?dht22_t=%d&dht22_h=%d&dht11_t=%d&dht11_h=%d&speed=%.2f&weight=%.2f&orientation=%d\r\n\r\n", hive->external_temperature, hive->external_humidity, hive->internal_temperature, hive->internal_humidity, hive->wend_speed, hive->weight, -1);
+    
+
+    if(!send(sockid, szHtppRequest, strlen(szHtppRequest), 0))
+    {
+        close(sockid);
+        perror("send()");
+    }
+
+    char szTemp[255];
+    memset(szTemp, '\0', sizeof(szTemp));
+    while(recv(sockid, szTemp, 255, 0))
+    {
+        printf("%s\n", szTemp);
+    }        
+        
+    shutdown(sockid, 2);
+    close(sockid);
 }
 
  

@@ -1,5 +1,5 @@
-#ifndef HIVE_H_
-#define HIVE_H_
+#ifndef HIVE_H
+#define HIVE_H
 
 #include "driver/gpio.h"
 #include "driver/adc.h"
@@ -13,15 +13,22 @@
 #include <hx711.h>
 
 // Standard lib
+#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
 
-
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <netdb.h>
 
 #define RADIUS 0.045 // Rayon de l'anémomètre 
-
 
 enum 
 {
@@ -56,8 +63,7 @@ typedef struct
 
 Hive HIVE_Create();
 void HIVE_RunTask(Hive* hive);
-
-
+void Hive_PushToDatabse(Hive* hive);
 void periodic_timer_display_callback(void* self);
 
  

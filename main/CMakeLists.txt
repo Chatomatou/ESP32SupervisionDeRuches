@@ -1,4 +1,4 @@
-idf_component_register(SRCS "main.c" "hive/hive.c" 
+idf_component_register(SRCS "main.c" "hive/hive.c"
                     INCLUDE_DIRS ".")
  
 add_library(hive STATIC IMPORTED)
